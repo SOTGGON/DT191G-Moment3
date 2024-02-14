@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BookCollection.Migrations
 {
-    [DbContext(typeof(BookContext))]
-    partial class BookContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(MyDbContext))]
+    partial class MyDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -30,16 +30,13 @@ namespace BookCollection.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Author");
+                    b.ToTable("Authors");
                 });
 
             modelBuilder.Entity("BookCollection.Models.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AuthorId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("AuthorName")
@@ -56,20 +53,7 @@ namespace BookCollection.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("Book");
-                });
-
-            modelBuilder.Entity("BookCollection.Models.Book", b =>
-                {
-                    b.HasOne("BookCollection.Models.Author", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
+                    b.ToTable("Books");
                 });
 #pragma warning restore 612, 618
         }

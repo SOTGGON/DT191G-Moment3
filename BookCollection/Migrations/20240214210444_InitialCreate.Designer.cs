@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BookCollection.Migrations
 {
-    [DbContext(typeof(BookContext))]
-    [Migration("20240214174740_InitialCreate")]
+    [DbContext(typeof(MyDbContext))]
+    [Migration("20240214210444_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -33,16 +33,13 @@ namespace BookCollection.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Author");
+                    b.ToTable("Authors");
                 });
 
             modelBuilder.Entity("BookCollection.Models.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AuthorId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("AuthorName")
@@ -59,20 +56,7 @@ namespace BookCollection.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("Book");
-                });
-
-            modelBuilder.Entity("BookCollection.Models.Book", b =>
-                {
-                    b.HasOne("BookCollection.Models.Author", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
+                    b.ToTable("Books");
                 });
 #pragma warning restore 612, 618
         }

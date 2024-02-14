@@ -17,10 +17,10 @@
             @Html.DisplayFor(model => model.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Author)
+            @Html.DisplayNameFor(model => model.AuthorName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Author)
+            @Html.DisplayFor(model => model.AuthorName)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Type)
@@ -41,9 +41,10 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+
 <style>
     .description {
-        max-width: 500px;
-        word-wrap: break-word;
+        max-width: 500px; /* 设置最大宽度 */
+        word-wrap: break-word; /* 允许长单词换行 */
     }
 </style>

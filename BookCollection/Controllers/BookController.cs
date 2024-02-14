@@ -12,9 +12,9 @@ namespace BookCollection.Controllers
 {
     public class BookController : Controller
     {
-        private readonly BookContext _context;
+        private readonly MyDbContext _context;
 
-        public BookController(BookContext context)
+        public BookController(MyDbContext context)
         {
             _context = context;
         }
@@ -22,7 +22,7 @@ namespace BookCollection.Controllers
         // GET: Book
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Book.ToListAsync());
+            return View(await _context.Books.ToListAsync());
         }
 
         // GET: Book/Details/5
@@ -33,7 +33,7 @@ namespace BookCollection.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Book
+            var book = await _context.Books
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
@@ -54,7 +54,7 @@ namespace BookCollection.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Author,Type,Description")] Book book)
+        public async Task<IActionResult> Create([Bind("Id,Name,AuthorName,Type,Description")] Book book)
         {
             if (ModelState.IsValid)
             {
@@ -73,7 +73,7 @@ namespace BookCollection.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Book.FindAsync(id);
+            var book = await _context.Books.FindAsync(id);
             if (book == null)
             {
                 return NotFound();
@@ -86,7 +86,7 @@ namespace BookCollection.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Author,Type,Description")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,AuthorName,Type,Description")] Book book)
         {
             if (id != book.Id)
             {
@@ -124,7 +124,7 @@ namespace BookCollection.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Book
+            var book = await _context.Books
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
@@ -139,10 +139,10 @@ namespace BookCollection.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var book = await _context.Book.FindAsync(id);
+            var book = await _context.Books.FindAsync(id);
             if (book != null)
             {
-                _context.Book.Remove(book);
+                _context.Books.Remove(book);
             }
 
             await _context.SaveChangesAsync();
@@ -151,7 +151,7 @@ namespace BookCollection.Controllers
 
         private bool BookExists(int id)
         {
-            return _context.Book.Any(e => e.Id == id);
+            return _context.Books.Any(e => e.Id == id);
         }
     }
 }

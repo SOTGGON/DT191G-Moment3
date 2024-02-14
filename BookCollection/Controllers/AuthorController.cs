@@ -12,9 +12,9 @@ namespace BookCollection.Controllers
 {
     public class AuthorController : Controller
     {
-        private readonly AuthorContext _context;
+        private readonly MyDbContext _context;
 
-        public AuthorController(AuthorContext context)
+        public AuthorController(MyDbContext context)
         {
             _context = context;
         }
@@ -22,7 +22,7 @@ namespace BookCollection.Controllers
         // GET: Author
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Author.ToListAsync());
+            return View(await _context.Authors.ToListAsync());
         }
 
         // GET: Author/Details/5
@@ -33,7 +33,7 @@ namespace BookCollection.Controllers
                 return NotFound();
             }
 
-            var author = await _context.Author
+            var author = await _context.Authors
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (author == null)
             {
@@ -73,7 +73,7 @@ namespace BookCollection.Controllers
                 return NotFound();
             }
 
-            var author = await _context.Author.FindAsync(id);
+            var author = await _context.Authors.FindAsync(id);
             if (author == null)
             {
                 return NotFound();
@@ -124,7 +124,7 @@ namespace BookCollection.Controllers
                 return NotFound();
             }
 
-            var author = await _context.Author
+            var author = await _context.Authors
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (author == null)
             {
@@ -139,10 +139,10 @@ namespace BookCollection.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var author = await _context.Author.FindAsync(id);
+            var author = await _context.Authors.FindAsync(id);
             if (author != null)
             {
-                _context.Author.Remove(author);
+                _context.Authors.Remove(author);
             }
 
             await _context.SaveChangesAsync();
@@ -151,7 +151,7 @@ namespace BookCollection.Controllers
 
         private bool AuthorExists(int id)
         {
-            return _context.Author.Any(e => e.Id == id);
+            return _context.Authors.Any(e => e.Id == id);
         }
     }
 }
