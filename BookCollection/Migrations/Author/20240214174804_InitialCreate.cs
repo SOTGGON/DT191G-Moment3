@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace BookCollection.Migrations
+namespace BookCollection.Migrations.Author
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -11,19 +11,17 @@ namespace BookCollection.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Book",
+                name: "Author",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Author = table.Column<string>(type: "TEXT", nullable: true),
-                    Type = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true)
+                    NumberOfBooks = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Book", x => x.Id);
+                    table.PrimaryKey("PK_Author", x => x.Id);
                 });
         }
 
@@ -31,7 +29,7 @@ namespace BookCollection.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Book");
+                name: "Author");
         }
     }
 }

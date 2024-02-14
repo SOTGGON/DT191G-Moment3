@@ -12,7 +12,7 @@ builder.Services.AddDbContext<BookContext>(options =>
 );
 
 builder.Services.AddDbContext<AuthorContext>(options => 
-    options.UseSqlite(builder.Configuration.GetConnectionString("AuthorDbString"))
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultDbString"))
 );
 
 var app = builder.Build();
