@@ -22,7 +22,8 @@ namespace BookCollection.Controllers
         // GET: Book
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Books.ToListAsync());
+            var myDbContext = _context.Books.Include(b => b.Author);
+            return View(await myDbContext.ToListAsync());
         }
 
         // GET: Book/Details/5
@@ -34,6 +35,7 @@ namespace BookCollection.Controllers
             }
 
             var book = await _context.Books
+                .Include(b => b.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
@@ -46,6 +48,7 @@ namespace BookCollection.Controllers
         // GET: Book/Create
         public IActionResult Create()
         {
+            ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Id");
             return View();
         }
 
@@ -54,7 +57,7 @@ namespace BookCollection.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,AuthorName,Type,Description")] Book book)
+        public async Task<IActionResult> Create([Bind("Id,Name,Type,Description,AuthorId")] Book book)
         {
             if (ModelState.IsValid)
             {
@@ -62,6 +65,7 @@ namespace BookCollection.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Id", book.AuthorId);
             return View(book);
         }
 
@@ -78,6 +82,7 @@ namespace BookCollection.Controllers
             {
                 return NotFound();
             }
+            ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Id", book.AuthorId);
             return View(book);
         }
 
@@ -86,7 +91,7 @@ namespace BookCollection.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,AuthorName,Type,Description")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Description,AuthorId")] Book book)
         {
             if (id != book.Id)
             {
@@ -113,6 +118,7 @@ namespace BookCollection.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Id", book.AuthorId);
             return View(book);
         }
 
@@ -125,6 +131,7 @@ namespace BookCollection.Controllers
             }
 
             var book = await _context.Books
+                .Include(b => b.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
