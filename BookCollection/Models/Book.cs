@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookCollection.Models {
@@ -14,6 +15,7 @@ namespace BookCollection.Models {
         
         public int AuthorId {get; set;}
 
+        [Display(Name = "AuthorID")]
         public virtual Author? Author { get; set; }
     }
 }
