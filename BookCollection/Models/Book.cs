@@ -17,5 +17,7 @@ namespace BookCollection.Models {
 
         [Display(Name = "AuthorID")]
         public virtual Author? Author { get; set; }
+
+        public bool IsBorrowed { get; set; } = false;
     }
 }

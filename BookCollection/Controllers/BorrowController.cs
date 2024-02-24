@@ -10,23 +10,23 @@ using BookCollection.Models;
 
 namespace BookCollection.Controllers
 {
-    public class BookController : Controller
+    public class BorrowController : Controller
     {
         private readonly MyDbContext _context;
 
-        public BookController(MyDbContext context)
+        public BorrowController(MyDbContext context)
         {
             _context = context;
         }
 
-        // GET: Book
+        // GET: Borrow
         public async Task<IActionResult> Index()
         {
-            var myDbContext = _context.Books.Include(b => b.Author);
+            var myDbContext = _context.Borrows.Include(b => b.Book);
             return View(await myDbContext.ToListAsync());
         }
 
-        // GET: Book/Details/5
+        // GET: Borrow/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -34,42 +34,51 @@ namespace BookCollection.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books
-                .Include(b => b.Author)
+            var borrow = await _context.Borrows
+                .Include(b => b.Book)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (book == null)
+            if (borrow == null)
             {
                 return NotFound();
             }
 
-            return View(book);
+            return View(borrow);
         }
 
-        // GET: Book/Create
+        // GET: Borrow/Create
         public IActionResult Create()
         {
-            ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Id");
+            ViewData["BookId"] = new SelectList(_context.Books, "Id", "Id");
             return View();
         }
 
-        // POST: Book/Create
+        // POST: Borrow/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Type,Description,AuthorId,IsBorrowed")] Book book)
+        public async Task<IActionResult> Create([Bind("Id,BookId,BorrowerName,BorrowDate")] Borrow borrow)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(book);
+                _context.Add(borrow);
                 await _context.SaveChangesAsync();
+
+                // Efter att ha lyckats låna boken, ställ in bokens isBorrowed-status till sant
+                var book = await _context.Books.FindAsync(borrow.BookId);
+                if (book != null)
+                {
+                    book.IsBorrowed = true;
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Id", book.AuthorId);
-            return View(book);
+            ViewData["BookId"] = new SelectList(_context.Books, "Id", "Id", borrow.BookId);
+            return View(borrow);
         }
 
-        // GET: Book/Edit/5
+        // GET: Borrow/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -77,23 +86,23 @@ namespace BookCollection.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
+            var borrow = await _context.Borrows.FindAsync(id);
+            if (borrow == null)
             {
                 return NotFound();
             }
-            ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Id", book.AuthorId);
-            return View(book);
+            ViewData["BookId"] = new SelectList(_context.Books, "Id", "Id", borrow.BookId);
+            return View(borrow);
         }
 
-        // POST: Book/Edit/5
+        // POST: Borrow/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Description,AuthorId,IsBorrowed")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,BookId,BorrowerName,BorrowDate")] Borrow borrow)
         {
-            if (id != book.Id)
+            if (id != borrow.Id)
             {
                 return NotFound();
             }
@@ -102,12 +111,12 @@ namespace BookCollection.Controllers
             {
                 try
                 {
-                    _context.Update(book);
+                    _context.Update(borrow);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BookExists(book.Id))
+                    if (!BorrowExists(borrow.Id))
                     {
                         return NotFound();
                     }
@@ -118,11 +127,11 @@ namespace BookCollection.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Id", book.AuthorId);
-            return View(book);
+            ViewData["BookId"] = new SelectList(_context.Books, "Id", "Id", borrow.BookId);
+            return View(borrow);
         }
 
-        // GET: Book/Delete/5
+        // GET: Borrow/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -130,35 +139,44 @@ namespace BookCollection.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books
-                .Include(b => b.Author)
+            var borrow = await _context.Borrows
+                .Include(b => b.Book)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (book == null)
+            if (borrow == null)
             {
                 return NotFound();
             }
 
-            return View(book);
+            return View(borrow);
         }
 
-        // POST: Book/Delete/5
+        // POST: Borrow/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var book = await _context.Books.FindAsync(id);
-            if (book != null)
+            var borrow = await _context.Borrows.FindAsync(id);
+            if (borrow != null)
             {
-                _context.Books.Remove(book);
+                // Om låneposten finns, hitta först motsvarande bok
+                var book = await _context.Books.FindAsync(borrow.BookId);
+                if (book != null)
+                {
+                    //Sätt bokens isBorrowed-status till false
+                    book.IsBorrowed = false;
+                    _context.Books.Update(book);
+                }
+
+                _context.Borrows.Remove(borrow);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BookExists(int id)
+        private bool BorrowExists(int id)
         {
-            return _context.Books.Any(e => e.Id == id);
+            return _context.Borrows.Any(e => e.Id == id);
         }
     }
 }
