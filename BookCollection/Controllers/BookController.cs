@@ -26,6 +26,27 @@ namespace BookCollection.Controllers
             return View(await myDbContext.ToListAsync());
         }
 
+        [Route("Book/Search")]
+        public async Task<IActionResult> Index(string? searchString)
+        {
+            ViewData["CurrentFilter"] = searchString;
+
+            var books = from b in _context.Books
+                        select b;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                string searchStringLower = searchString.ToLower(); // Konvertera söksträng till gemener
+
+                books = books.Where(b =>
+                    b.Name.ToLower().Contains(searchStringLower) ||  // Konvertera boknamn till gemener för jämförelse
+                    b.Type.ToLower().Contains(searchStringLower)   // Konvertera boktyp till gemener för jämförelse
+                );
+            }
+
+            return View(await books.Include(b => b.Author).ToListAsync());
+        }
+
         // GET: Book/Details/5
         public async Task<IActionResult> Details(int? id)
         {
