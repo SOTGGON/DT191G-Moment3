@@ -82,11 +82,11 @@ namespace BookCollection.Controllers
         {
             if (ModelState.IsValid)
             {
-                // 从数据库中获取对应的作者信息
+                // Hämta motsvarande författarinformation från databasen
                 var author = await _context.Authors.FindAsync(book.AuthorId);
                 if (author != null)
                 {
-                    // 增加作者的作品数量
+                    // Öka antalet verk av en författare
                     author.NumberOfBooks++;
                     _context.Update(author);
                     await _context.SaveChangesAsync();

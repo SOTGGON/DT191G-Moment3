@@ -8,8 +8,6 @@ namespace BookCollection.Models {
         public string Name { get; set; } = null!;
         public int NumberOfBooks { get; set; }
 
-        /* public virtual List<Book> Books { get; set; } */
-
         public virtual ICollection<Book>? Books {get; set;}
     }
 }
