@@ -10,11 +10,7 @@ namespace BookCollection.Models {
         public string Type {get; set;} = null!;
         public string? Description {get; set;}
 
-        /* public Author Author { get; set; } // Navigeringsegenskaper
-        [ForeignKey("AuthorId")] */
-        
         public int AuthorId {get; set;}
-
         public virtual Author? Author { get; set; }
 
         public bool IsBorrowed { get; set; } = false;

@@ -82,6 +82,16 @@ namespace BookCollection.Controllers
         {
             if (ModelState.IsValid)
             {
+                // 从数据库中获取对应的作者信息
+                var author = await _context.Authors.FindAsync(book.AuthorId);
+                if (author != null)
+                {
+                    // 增加作者的作品数量
+                    author.NumberOfBooks++;
+                    _context.Update(author);
+                    await _context.SaveChangesAsync();
+                }
+
                 _context.Add(book);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -170,10 +180,16 @@ namespace BookCollection.Controllers
             var book = await _context.Books.FindAsync(id);
             if (book != null)
             {
-                _context.Books.Remove(book);
-            }
+                var author = await _context.Authors.FindAsync(book.AuthorId);
+                if (author != null)
+                {
+                    author.NumberOfBooks--;
+                    _context.Update(author);
+                }
 
-            await _context.SaveChangesAsync();
+                _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Index));
         }
 
